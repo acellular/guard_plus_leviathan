@@ -6,7 +6,7 @@ class Agriculture:
         self.depletion = [0,0,0,0,0,0,0,0,0,0] #TODO--SHOULD BE ARRAY LIKE RULES????
         self.yields = 0
         self.yields_prev = 0
-        self.workrate = .5 #TODO--start rnd instead?
+        self.workrate = .5
         
         
     #find the agricultural returns of this community

@@ -36,16 +36,7 @@ class Paradigm():
     # compare expectations of this paradigm for communitys considering
     # adopting it, relative to the community the paradigm already follows
     def Compare(self, community):
-        if community.params.contagion == 'Perfect':
-            returns = sum(self.yield_rules) - (sum(self.depletion_rules)*10)
-            comm_returns = sum(community.paradigm.yield_rules) - (sum(community.paradigm.depletion_rules)*10)
-            return returns / (comm_returns + 0.001)
-        elif community.params.contagion == 'FutureDiscounted':
-            returns = sum(self.yield_rules) - (sum(self.depletion_rules)*10)
-            comm_returns = sum(community.paradigm.yield_rules) - sum(community.paradigm.depletion_rules)
-            return returns / (comm_returns + 0.001)
-        else:
-            return self.expectations / community.paradigm.expectations
+        return self.expectations / community.paradigm.expectations
 
 
     # create new para by modifying this paradigm by removing and adding rules
@@ -72,8 +63,14 @@ class Paradigm():
     # adjust expectations-->accessed by all communities
     # using this paradigm creating "word of mouth"
     def UpdateExpectations(self, community):
-        self.expectations += (((community.icono.comfort - .5) * 0.02) + ((community.agri.yields - self.expectations) * 0.02)) / len(self.followers)
+        if community.params.contagion is None:
+            self.expectations += (((community.icono.comfort - .5) * 0.02) + ((community.agri.yields - self.expectations) * 0.02)) / len(self.followers)
+        elif community.params.contagion == 'Perfect': #perfect information
+            self.expectations = sum(self.yield_rules) - (sum(self.depletion_rules)*10)
+        elif community.params.contagion == 'FutureDiscounted': #incomplete information
+            self.expectations = sum(self.yield_rules) - sum(self.depletion_rules)
+        else:
+            raise Exception("Invalid contagion parameter")
         
         #bounds
-        if self.expectations <= 0:
-            self.expectations = .0000001
+        if self.expectations <= 0: self.expectations = .0000001
