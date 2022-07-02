@@ -1,3 +1,11 @@
+# Added Leviathan Notebooks
+
+--old_world_leviathan:
+like the old world notebook below but with Leviathan paradigm evolution added
+--old_world_paramtesting:
+similar, but with iteractive parameter testing (for finding those with highest correlation)
+
+
 # GUARD Notebooks
 
 The notebooks in this directory give examples of how to use the guard module.

@@ -7,6 +7,10 @@ from numpy import sqrt
 from numpy.random import random, permutation
 import yaml
 
+#LEV
+from .Leviathan import Paradigm, Agriculture
+import random as rnd
+
 _START_YEAR = -1500
 _YEARS_PER_STEP = 2
 
@@ -246,8 +250,37 @@ class World(object):
         setting the step number to 0.
         """
         self.step_number = 0
+        
+        #LEV Reset tiles (communities)--seems like these should have been reset before...
+        # Otherwise ultrasociety and military techs carried over between tests
+        for tile in self.tiles:
+            tile.paradigm = Paradigm.Paradigm(tile)
+            tile.icono.comfort = rnd.random()
+            tile.agri = Agriculture.Agriculture(tile)
+            tile.sea_attack_distance = 0
+            
+            tile.ultrasocietal_traits = [False]*self.params.n_ultrasocietal_traits
+            if self.params.military_technology_seed == 'steppes':
+                # Steppe communities start with all military technologies
+                if tile.terrain == terrain.steppe:
+                    tile.military_techs = [True]*self.params.n_military_techs
+                else:
+                    tile.military_techs = [False]*self.params.n_military_techs
+            elif self.params.military_technology_seed == 'uniform':
+                # 4.34% chance of starting with all military technologies In the
+                # original simulation there are 115 steppes tiles out of 2647
+                # polity supporting (steppe or agricultural) tiles making 4.34% of
+                # the communities begining with all miliatry technologies
+                if random() < 0.0434:
+                    if tile.terrain in [terrain.steppe, terrain.agriculture]:
+                        tile.military_techs = [True]*self.params.n_military_techs
+                else:
+                    tile.military_techs = [False]*self.params.n_military_techs
+        
         self.polities = [polity.Polity([tile])
-                         for tile in self.tiles if tile.terrain.polity_forming]
+                         for tile in self.tiles]#if tile.terrain.polity_forming] #for display--should not be used anywhere but polity forming
+        #TODO--change analysis so don't need to create polities on all tiles?
+        
 
     def cultural_shift(self):
         """
@@ -255,7 +288,7 @@ class World(object):
         """
         for tile in self.tiles:
             if tile.terrain.polity_forming:
-                tile.cultural_shift(self.params)
+                tile.cultural_shift(self.params, self.step_number) #LEV added step number so can check if active
 
     def disintegration(self):
         """

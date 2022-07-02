@@ -1,7 +1,7 @@
 """
 Polity Module.
 """
-
+import random as rnd #LEV
 
 class Polity(object):
     """
@@ -19,6 +19,8 @@ class Polity(object):
         self.communities = communities
         for community in communities:
             community.assign_to_polity(self)
+            
+        self.name = rnd.random() #LEV
 
     def __str__(self):
         string = "Polity:\n"

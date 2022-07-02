@@ -57,7 +57,27 @@ _default_parameters = {
         # Attack method, valid values are 'uniform' and 'entropy_maximisation'
         'attack_method': 'uniform',
         # Military technology seding, valid values are 'steppes' and 'uniform'
-        'military_technology_seed': 'steppes'
+        'military_technology_seed': 'steppes',
+    
+    
+        #LEV Leviathan parameters
+        # number of extra loops in each step for agri and icono
+        'num_icono_loops': 1,#1,
+        # workrate change per iteration
+        'workrate_change': 0.001,#0.001,
+        # the better-than-current-expectations threshold to adoption
+        'threshold': 1,#1,
+        # number of rules to mutate
+        'mut_amount': 1,#1,
+        # base chance of mutation each step
+        'mutation_rate': 0.0001,#.0001,
+        # comfort sensitivity to good or bad change and misaligned expectations
+        'sensitivity': .05,#.01
+    
+        #Testing parameters
+        'spread_para_on_ethnocide': False,
+        'icono': False,
+        'contagion': None, # 'Perfect' or 'FutureDiscounted' or None (Leviathan expects and icono)
         }
 
 """

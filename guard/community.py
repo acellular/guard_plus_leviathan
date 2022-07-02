@@ -6,6 +6,9 @@ from collections import namedtuple
 from numpy.random import random, randint, choice
 import numpy as np
 
+#LEV
+from .Leviathan import Paradigm, ICONORHYTHM, Agriculture
+
 """
 Names of the four cardinal directions
 """
@@ -81,6 +84,14 @@ class Community(object):
         self.littoral_neighbours = []
 
         self.polity = None
+        
+        #LEV ################
+        self.params = params
+        self.paradigm = Paradigm.Paradigm(self)
+        self.icono = ICONORHYTHM.ICONORHYTHM(self)
+        self.agri = Agriculture.Agriculture(self)
+        self.sea_attack_distance = 0
+        #####################
 
     def __str__(self):
         string = "Community:\n"
@@ -173,7 +184,8 @@ class Community(object):
         Returns:
             (float): The attack power.
         """
-        return self.polity.attack_power(params)
+        #return self.polity.attack_power(params)
+        return (self.polity.attack_power(params) * (self.icono.comfort+.001) *2) #LEV
 
     def defence_power(self, params, sea_attack):
         """
@@ -265,6 +277,9 @@ class Community(object):
             # Attempt ethnocide
             if self.ethnocide_probability(target, params) > random():
                 target.ultrasocietal_traits[:] = self.ultrasocietal_traits
+                
+                if params.spread_para_on_ethnocide: target.paradigm = self.paradigm #LEV
+                
 
     def attempt_attack(self, params, step_number, sea_attack_distance,
                        callback=None):
@@ -280,6 +295,8 @@ class Community(object):
                 invoked when a successful attack is made. Currently used to
                 collect attack frequency.
         """
+        self.sea_attack_distance = sea_attack_distance #LEV saved so can be used by icono
+        
         sea_attack = False
         proceed = True
 
@@ -365,23 +382,45 @@ class Community(object):
         # attack proceeded or was successful
         self.diffuse_military_tech(target, params)
 
-    def cultural_shift(self, params):
+    def cultural_shift(self, params, step_number):
         """
         Local cultural shift (mutation of ultrasocietal traits vector).
 
         Args:
             params (Parameters): The simulation parameter set.
         """
-        for index, trait in enumerate(self.ultrasocietal_traits):
-            if trait is False:
-                # Chance to develop an ultrasocietal trait
-                if params.mutation_to_ultrasocietal > random():
-                    self.ultrasocietal_traits[index] = True
-            else:
-                # Chance to loose an ultrasocietal trait
-                if params.mutation_from_ultrasocietal > random():
-                    self.ultrasocietal_traits[index] = False
+        
+        #LEV ##############################
+        # Run the Leviathan agriculture and iconorhythm if an active agricultural community
+        # Then usual possible cultural shift, but now comfort affects losing ultrasocietal trait
+        if (params.icono and self.is_active(step_number)):
+            for i in range(self.params.num_icono_loops):
+                self.agri.Run()
+                self.icono.Run()
+            
+            
+            for index, trait in enumerate(self.ultrasocietal_traits):
+                if trait is False:
+                    if params.mutation_to_ultrasocietal > random():
+                        self.ultrasocietal_traits[index] = True
+                else:
+                    # Chance to loose an ultrasocietal trait
+                    if params.mutation_from_ultrasocietal - ((self.icono.comfort-.5)*params.mutation_from_ultrasocietal) > random(): #LEV
+                        self.ultrasocietal_traits[index] = False
+        
+        else: # original cultural shift      
+            for index, trait in enumerate(self.ultrasocietal_traits):
+                if trait is False:
+                    # Chance to develop an ultrasocietal trait
+                    if params.mutation_to_ultrasocietal  > random():
+                        self.ultrasocietal_traits[index] = True
+                else:
+                    # Chance to loose an ultrasocietal trait
+                    if params.mutation_from_ultrasocietal > random():
+                        self.ultrasocietal_traits[index] = False
+        ##############################
 
+                        
     def diffuse_military_tech(self, target, params):
         """
         Attempt to spread military technology.

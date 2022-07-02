@@ -139,8 +139,9 @@ def plot_ultrasocietal_traits(world, highlight_desert=False,
 
     im = ax.imshow(np.rot90(plot_data), cmap=colour_map)
     fig.colorbar(im)
-    fig.savefig('ultrasocietal_traits_{:04d}.pdf'.format(world.step_number),
-                format='pdf')
+    fig.savefig('ultrasocietal_traits_{:04d}.png'.format(world.step_number))
+    plt.show()#LEV added to show while running
+    plt.close()
 
 
 def plot_active_agriculture(world, highlight_desert=False,
@@ -793,3 +794,135 @@ class CompareEmpireShape(object):
             compare.n_polities = pickle.load(picklefile)
             compare.polity_sizes = pickle.load(picklefile)
         return compare
+
+    
+#LEV ANALYSIS ADDITIONS#####################
+def plot_yields(world, highlight_desert=False, highlight_steppe=False):
+    fig, ax, colour_map = _init_world_plot()
+
+    # Prepare data
+    plot_data = np.array([
+        [world.index(x, y).agri.yields
+         for y in range(world.ydim)] for x in range(world.xdim)
+        ])
+    plot_data = plot_data / 10 #TODO--without normalization?? AND ALSO PARAMETERIZE TO LENGTH OF YIELDS ARRAY...
+
+    # Generate rgba data
+    plot_data = colour_map(plot_data)
+    #plot_data = _colour_special_tiles(plot_data, world, highlight_desert, highlight_steppe)
+
+    im = ax.imshow(np.rot90(plot_data), cmap=colour_map)
+    fig.colorbar(im)
+    plt.title("Yields")
+    fig.savefig('yields_{:04d}.png'.format(world.step_number))
+    plt.show()#LEV
+    plt.close()
+    
+def plot_depletion(world, highlight_desert=False, highlight_steppe=False):
+    fig, ax, colour_map = _init_world_plot()
+
+    # Prepare data
+    plot_data = np.array([
+        [sum(world.index(x, y).agri.depletion)
+         for y in range(world.ydim)] for x in range(world.xdim)
+        ])
+    plot_data = plot_data / 10
+    # Generate rgba data
+    plot_data = colour_map(plot_data)
+    #plot_data = _colour_special_tiles(plot_data, world, highlight_desert, highlight_steppe)
+
+    im = ax.imshow(np.rot90(plot_data), cmap=colour_map)
+    fig.colorbar(im)
+    plt.title("Depletion")
+    fig.savefig('depletion_{:04d}.png'.format(world.step_number))
+    plt.show()
+    plt.close()
+    
+def plot_comfort(world, highlight_desert=False, highlight_steppe=False):
+    fig, ax, colour_map = _init_world_plot()
+
+    # Prepare data
+    plot_data = np.array([
+        [world.index(x, y).icono.comfort
+         for y in range(world.ydim)] for x in range(world.xdim)
+        ])
+    #plot_data = plot_data / world.params.n_military_techs will see if need normalization
+
+    # Generate rgba data
+    plot_data = colour_map(plot_data)
+    #plot_data = _colour_special_tiles(plot_data, world, highlight_desert, highlight_steppe)
+
+    im = ax.imshow(np.rot90(plot_data), cmap=colour_map)
+    fig.colorbar(im)
+    plt.title("Comfort")
+    fig.savefig('comfort_{:04d}.png'.format(world.step_number))
+    plt.show()
+    plt.close()
+    
+def plot_expectations(world, highlight_desert=False, highlight_steppe=False):
+    fig, ax, colour_map = _init_world_plot()
+
+    # Prepare data
+    plot_data = np.array([
+        [world.index(x, y).paradigm.expectations
+         for y in range(world.ydim)] for x in range(world.xdim)
+        ])
+    plot_data = plot_data / 100 #will see if need normalization
+
+    # Generate rgba data
+    plot_data = colour_map(plot_data)
+    #plot_data = _colour_special_tiles(plot_data, world, highlight_desert, highlight_steppe)
+
+    im = ax.imshow(np.rot90(plot_data), cmap=colour_map)
+    fig.colorbar(im)
+    plt.title("Expectations")
+    fig.savefig('comfort_{:04d}.png'.format(world.step_number))
+    plt.show()
+    plt.close()
+    
+def plot_paradigms(world, highlight_desert=False, highlight_steppe=False):
+    fig, ax, colour_map = _init_world_plot()
+    
+    colour_map = plt.get_cmap('tab20')
+
+    # Prepare data
+    plot_data = np.array([
+        [world.index(x, y).paradigm.name
+         for y in range(world.ydim)] for x in range(world.xdim)
+        ])
+    #plot_data = plot_data / world.params.n_military_techs will see if need normalization
+
+    # Generate rgba data
+    plot_data = colour_map(plot_data)
+    #plot_data = _colour_special_tiles(plot_data, world, highlight_desert, highlight_steppe)
+
+    im = ax.imshow(np.rot90(plot_data), cmap=colour_map)
+    fig.colorbar(im)
+    plt.title("Paradigms")
+    fig.savefig('paradigms_{:04d}.png'.format(world.step_number))
+    plt.show()
+    plt.close()
+    
+    
+def plot_polities(world, highlight_desert=False, highlight_steppe=False):
+    fig, ax, colour_map = _init_world_plot()
+    
+    colour_map = plt.get_cmap('tab20')
+
+    # Prepare data
+    plot_data = np.array([
+        [world.index(x, y).polity.name
+         for y in range(world.ydim)] for x in range(world.xdim)
+        ])
+    #plot_data = plot_data / world.params.n_military_techs will see if need normalization
+
+    # Generate rgba data
+    plot_data = colour_map(plot_data)
+    #plot_data = _colour_special_tiles(plot_data, world, highlight_desert, highlight_steppe)
+
+    im = ax.imshow(np.rot90(plot_data), cmap=colour_map)
+    fig.colorbar(im)
+    plt.title("Polities")
+    fig.savefig('polities_{:04d}.png'.format(world.step_number))
+    plt.show()
+    plt.close()
