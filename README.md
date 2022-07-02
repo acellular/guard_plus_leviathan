@@ -6,6 +6,8 @@ to yield and depletion rates in mutable paradigms that spread from community
 to community depending on the comfort of communities and the expectations
 of current and potential paradigms.
 
+#
+#####ORIGINAL README######
 
 # guard [![Build Status](https://travis-ci.com/alan-turing-institute/guard.svg?token=QpRTp1bT17BnXV9jtJ6H&branch=master)](https://travis-ci.com/alan-turing-institute/guard) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/alan-turing-institute/guard/master)
 
