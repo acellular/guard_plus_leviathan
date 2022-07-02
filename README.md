@@ -1,8 +1,8 @@
-#Adding my Leviathan model to the Madge et al.'s (2019)
+Adding my Leviathan model to Madge et al.'s (2019)
 implementation of the old world model from Turchin et al. (2013)
 
 The leviathan model adds agricultural yields and soil depletion according
-to yield and depletion rates mutable paradigms that spread from community
+to yield and depletion rates in mutable paradigms that spread from community
 to community depending on the comfort of communities and the expectations
 of current and potential paradigms.
 
