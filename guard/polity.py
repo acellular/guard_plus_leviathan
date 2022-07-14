@@ -21,6 +21,7 @@ class Polity(object):
             community.assign_to_polity(self)
             
         self.name = rnd.random() #LEV
+        self.max_size = 0 #LEV
 
     def __str__(self):
         string = "Polity:\n"

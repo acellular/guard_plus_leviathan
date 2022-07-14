@@ -54,6 +54,9 @@ class World(object):
 
         # Each agricultural tile is its own polity, set step number to zero
         self.reset()
+        
+        #LEV TRACKING THAT SHOULD BE SOMEWHERE ELSE...
+        self.polity_sizes = []
 
     def __str__(self):
         string = 'World:\n'
@@ -301,6 +304,10 @@ class World(object):
                 continue
             if state.disintegrate_probability(self.params) > random():
                 # Create a new set of polities, one for each of the communities
+                
+                #LEV--TRACKING FOR POWERLAWS
+                self.polity_sizes.append(state.max_size)
+                
                 new_states += state.disintegrate()
 
         # Delete the now empy polities
@@ -354,6 +361,19 @@ class World(object):
 
         # Increment step counter
         self.step_number += 1
+        
+        #LEV--POWER LAW TESTING OF POLITIES--SHOULD PROBABLY BE IN ANALYSIS INSTEAD?
+        #CURRENTLY OUTPUTS MAX ON DISINTEGRATION AND AT END
+        for polity in self.polities:
+            if polity.max_size < len(polity.communities):
+                polity.max_size = len(polity.communities)
+    
+    def end(self):
+        for polity in self.polities:
+            self.polity_sizes.append(polity.max_size)
+        
+        return self.polity_sizes
+            
 
 
 class MissingYamlKey(Exception):

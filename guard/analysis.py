@@ -470,7 +470,7 @@ class CorrelateBase(object):
             fig.savefig('{}_{}.pdf'.format(self._prefix, era))
 
     def correlate(self, accumulator, blur=False, cumulative=False, area=None,
-                  exclude=None, log_log=False):
+                  exclude=None, log_log=False, charts=True):
         """
         Perform a linear regression of the accumulators date against the
         correlators data and plot the result.
@@ -510,6 +510,13 @@ class CorrelateBase(object):
 
         # Correlate population and imperial density between eras in both
         # cities data and imperial denisty
+        
+        total_r = .0 #LEV
+        total_n = 0
+        BC_r = .0
+        BCAD_r = .0
+        AD_r = .0
+        
         for era in common_eras:
             # Figure and axes
             fig, ax = plt.subplots()
@@ -561,6 +568,12 @@ class CorrelateBase(object):
 
             # Linear regression
             linreg = stats.linregress(comparison, data)
+            total_r += linreg.rvalue
+            total_n += len(data)
+            #NOT FUTURE SAFE
+            if era == '1500BC-500BC': BC_r = linreg.rvalue
+            elif era == '500BC-500AD': BCAD_r = linreg.rvalue
+            elif era == '500AD-1500AD': AD_r = linreg.rvalue
 
             # Scatter plot of data against comparison with best fit line
             ax.plot(comparison, data, 'x')
@@ -570,6 +583,11 @@ class CorrelateBase(object):
             fig.tight_layout()
             fig.savefig('{}_{}_correlation_{}.pdf'.format(
                 self._prefix, accumulator._prefix, era), format='pdf')
+            
+        #LEV
+        if charts: plt.show()
+        plt.close('all')
+        return total_r / len(common_eras), total_n / len(common_eras), BC_r, BCAD_r, AD_r
 
 
 # Population corralatable class
@@ -909,7 +927,7 @@ def plot_polities(world, highlight_desert=False, highlight_steppe=False):
     
     colour_map = plt.get_cmap('tab20')
 
-    # Prepare data
+    # Prepare data #TODO--make work with non polity tiles removed
     plot_data = np.array([
         [world.index(x, y).polity.name
          for y in range(world.ydim)] for x in range(world.xdim)
@@ -926,3 +944,73 @@ def plot_polities(world, highlight_desert=False, highlight_steppe=False):
     fig.savefig('polities_{:04d}.png'.format(world.step_number))
     plt.show()
     plt.close()
+    
+import math
+
+##Print out log-log charts of the input data (used for paradigm spread)
+def logLogHistogramOut (data, title, bin_multiplier=2):
+
+    #clear zeros and negatives
+    data = [i for i in data if i > 0]
+    
+    #set up chart
+    fig = plt.figure(figsize=(5, 5))
+    plot1 = fig.add_subplot(111)
+    plot1.set_xscale('log')
+    plot1.set_yscale('log',nonpositive='clip')
+    plot1.set_xlabel('x')
+    plot1.set_ylabel('PDF')
+
+    # create log bins: (by specifying the multiplier)
+    try:
+        bins = [np.min(data)]
+        cur_value = bins[0]
+    except:
+        print('ERROR creating', title, 'plot. Run the test longer or change the bin size')
+        return
+    while cur_value < np.max(data):
+        cur_value *= bin_multiplier
+        bins.append(cur_value)
+
+    #print basic histogram
+    bins = np.array(bins)
+    values, nBins, patches = plot1.hist(data, bins=bins, density=True)
+    
+  
+    #add regression line
+    #NOTE!!!!---a bit HACKY when there's no data in a bin
+    #just takes previous point and averages it with nothing
+    #--better to change the bin size
+    #or the values that regression covers
+    #or simply run longer tests resulting in more data and thus less chance of empty bins
+    logBinnedX = []
+    for b in nBins:
+        logBinnedX.append(math.log10(b))
+    logValues = []
+    for i in range(len(values)):
+        if values[i] != 0:
+            logValues.append(math.log10(values[i]))
+        else:
+            logValues.append(math.log10(values[i-1]/2))#the hacky bit
+    
+    #remove the first bin value (so only using the right limit of each bin)
+    #and remove the last bin value so centered on what tend to be the most representative results
+    #CHANGE THESE VALUES to add more specific regression lines for specific tests
+    logBinnedX = logBinnedX[2:len(logBinnedX)-1]
+    logValues = logValues[1:len(logValues)-1]
+    #now get slope of the logged values
+    try:
+        slope, intercept, r_value, p_value, std_err = stats.linregress(logBinnedX, logValues)
+    except:
+        print('ERROR creating', title, 'plot. Run the test longer or change the bin size')
+        return
+    nnBins = nBins[1:len(nBins)-1]
+    #in power law form the slope becomes the exponent, and 10 to the intercept becomes the scaling constant
+    plot1.plot(nnBins, (10**intercept)*nnBins**slope, 'r', label='fitted line')
+    
+
+    #print out the chart
+    plot1.set_title(f'PDF {title},\nSlope: {slope:.3f} r: {r_value:.3f}')
+    plot1.set_xlim(1, nBins[len(nBins)-1])
+    plot1.set_ylim(top = 1)
+    fig.savefig(title + 'PDFandSlope.png')
