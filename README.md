@@ -6,6 +6,9 @@ to yield and depletion rates in mutable paradigms that spread from community
 to community depending on the comfort of communities and the expectations
 of current and potential paradigms.
 
+See the notebooks in /notebooks/guard_plus_leviathan/ to see the model in
+action with hypothesis and power law testing.
+
 #
 #####ORIGINAL README######
 
