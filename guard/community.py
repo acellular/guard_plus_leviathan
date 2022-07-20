@@ -91,6 +91,7 @@ class Community(object):
         self.icono = ICONORHYTHM.ICONORHYTHM(self)
         self.agri = Agriculture.Agriculture(self)
         self.sea_attack_distance = 0
+        self.battle_size = 0
         #####################
 
     def __str__(self):
@@ -279,6 +280,9 @@ class Community(object):
                 target.ultrasocietal_traits[:] = self.ultrasocietal_traits
                 
                 if params.spread_para_on_ethnocide: target.paradigm = self.paradigm #LEV
+        
+        #LEV TRACKING SHOULD BE ELSEWHERE?
+        self.battle_size = len(self.polity.communities) + len(target.polity.communities)
                 
 
     def attempt_attack(self, params, step_number, sea_attack_distance,

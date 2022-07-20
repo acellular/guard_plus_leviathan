@@ -57,6 +57,7 @@ class World(object):
         
         #LEV TRACKING THAT SHOULD BE SOMEWHERE ELSE...
         self.polity_sizes = []
+        self.battles_by_size = [] #sized by the two polities in conflict
 
     def __str__(self):
         string = 'World:\n'
@@ -328,6 +329,7 @@ class World(object):
         attack_order = permutation(self.total_tiles)
         for tile_no in attack_order:
             tile = self.tiles[tile_no]
+            tile.battle_size = 0 #LEV TRACKING-ELSEWHERE?
             if tile.can_attack(self.step_number):
                 tile.attempt_attack(self.params, self.step_number,
                                     self.sea_attack_distance(), callback)
@@ -362,11 +364,14 @@ class World(object):
         # Increment step counter
         self.step_number += 1
         
-        #LEV--POWER LAW TESTING OF POLITIES--SHOULD PROBABLY BE IN ANALYSIS INSTEAD?
+        #LEV--POWER LAW TESTING OF POLITIES AND BATTLES
+        #SHOULD PROBABLY BE IN ANALYSIS INSTEAD?
         #CURRENTLY OUTPUTS MAX ON DISINTEGRATION AND AT END
         for polity in self.polities:
             if polity.max_size < len(polity.communities):
                 polity.max_size = len(polity.communities)
+        for tile in self.tiles:
+            self.battles_by_size.append(tile.battle_size)
     
     def end(self):
         for polity in self.polities:

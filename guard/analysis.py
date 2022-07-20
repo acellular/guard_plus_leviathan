@@ -975,7 +975,6 @@ def logLogHistogramOut (data, title, bin_multiplier=2):
     #print basic histogram
     bins = np.array(bins)
     values, nBins, patches = plot1.hist(data, bins=bins, density=True)
-    
   
     #add regression line
     #NOTE!!!!---a bit HACKY when there's no data in a bin

@@ -16,7 +16,7 @@ class Agriculture:
         self.yields = 0
         
         #NEW 0.11--LATITUDE SPREAD
-        lat_modify = (1- (((abs(self.community.position[1] - self.community.paradigm.latitude))/self.community.paradigm.maxlat)*4))*2
+        lat_modify = (1- (((abs(self.community.position[1] - self.community.paradigm.latitude))/self.community.paradigm.maxlat)*2))*2
         
         #calculate yields and depletion for each section of community (in array)
         #TODO--replace with matrix calculation via numpy?
