@@ -1,5 +1,6 @@
 import random as rnd
 from .. import terrain
+from numpy.random import random, randint
 
 #paradigm shifts via comfort and expectations
 class ICONORHYTHM:
@@ -14,7 +15,7 @@ class ICONORHYTHM:
         #if simple contagion paradigm spread
         if self.community.params.contagion is not None:
             #only checking if meeting ultrasociety needs
-            self.comfort = (self.community.agri.yields - sum(self.community.ultrasocietal_traits)) / 10
+            self.comfort = (self.community.agri.yields-sum(self.community.ultrasocietal_traits)) / 10
             self.contagion_response()
             return
         
@@ -30,13 +31,16 @@ class ICONORHYTHM:
         gettingBetter = self.community.agri.yields - self.community.agri.yields_prev
 
         # how do expectations and reality compare? (including saved surplusses)
-        expectsVsReal = ((self.community.agri.yields + self.community.paradigm.expectations) / self.community.paradigm.expectations) - 2
+        expectsVsReal = ((self.community.agri.yields + self.community.paradigm.expectations)
+            / self.community.paradigm.expectations) - 2
         
         # are yields high enough to support societal level?
-        meetingNeeds = self.community.agri.yields - sum(self.community.ultrasocietal_traits) - 1 #TODO PARAMERETIZE BOTH SO MATCH NUM ULTRA TO NUM YEILDS
+        #TODO PARAMERETIZE BOTH SO MATCH NUM ULTRA TO NUM YEILDS
+        meetingNeeds = self.community.agri.yields - sum(self.community.ultrasocietal_traits) - 1 
 
         # add thus
-        howAreThingsGoing = (expectsVsReal + gettingBetter  + meetingNeeds) * self.community.paradigm.sensitivity
+        howAreThingsGoing = ((expectsVsReal + gettingBetter  + meetingNeeds)
+                                * self.community.paradigm.sensitivity)
 
         self.AdjustComfort(howAreThingsGoing)
 
@@ -101,10 +105,14 @@ class ICONORHYTHM:
             if ct.Compare(self.community) > self.community.paradigm.threshold * self.comfort:
                 self.community.paradigm = ct
                 newPara = True
+                if self.community.params.mil_spread:
+                    self.diffuse_military_tech(self.community, self.community.params, ct.military_techs)
                 break
 
+
         # MUTATE!!! (via current paradigm's rules on mutation)
-        if not newPara and rnd.random() < discomfort * discomfort * discomfort * self.community.paradigm.mutation_rate:
+        if not newPara and rnd.random() < (discomfort * discomfort * discomfort
+                                            * self.community.paradigm.mutation_rate):
             p = self.community.paradigm.Mutate(self.community)
             self.community.paradigm = p
             newPara = True
@@ -131,5 +139,15 @@ class ICONORHYTHM:
             self.comfort = 0
         elif self.comfort > 1:
             self.comfort = 1
+
+
+    # for spreading military techs with paradigm mimesis, copied from community
+    def diffuse_military_tech(self, target, params, military_techs):
+        # Select a tech to share
+        selected_tech = randint(params.n_military_techs)
+        if military_techs[selected_tech] is True:
+            if params.military_tech_spread_probability > random():
+                # Share this tech with the target
+                target.military_techs[selected_tech] = True
 
 

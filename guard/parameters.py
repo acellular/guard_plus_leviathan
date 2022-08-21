@@ -62,21 +62,26 @@ _default_parameters = {
     
         #LEV Leviathan parameters
         # number of extra loops in each step for agri and icono
-        'num_icono_loops': 1,#1,
+        'num_icono_loops': 2,#1,
         # workrate change per iteration
-        'workrate_change': 0.001,#0.001,
+        'workrate_change': 0.1,#0.001,
         # the better-than-current-expectations threshold to adoption
-        'threshold': 1,#1,
+        'threshold': 40,#1,
         # number of rules to mutate
         'mut_amount': 1,#1,
         # base chance of mutation each step
-        'mutation_rate': 0.0001,#.0001,
+        'mutation_rate': 0.005,#.0001,
         # comfort sensitivity to good or bad change and misaligned expectations
         'sensitivity': .05,#.01
-    
+        # latitude modifier
+        'lat_mod': 10,#2 org"
+        # yields multiplier
+        'mult': 10,#2 org
+        
         #Testing parameters
+        'mil_spread': False,#False # attempt spread military tech with paradigms
         'spread_para_on_ethnocide': False,
-        'icono': False,
+        'icono': False, #if false acts just like original old world model
         'contagion': None, # 'Perfect' or 'FutureDiscounted' or None (Leviathan expects and icono)
         }
 

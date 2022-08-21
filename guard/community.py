@@ -409,7 +409,8 @@ class Community(object):
                         self.ultrasocietal_traits[index] = True
                 else:
                     # Chance to loose an ultrasocietal trait
-                    if params.mutation_from_ultrasocietal - ((self.icono.comfort-.5)*params.mutation_from_ultrasocietal) > random(): #LEV
+                    if params.mutation_from_ultrasocietal - ((self.icono.comfort-.5)
+                    *params.mutation_from_ultrasocietal) > random():
                         self.ultrasocietal_traits[index] = False
         
         else: # original cultural shift      

@@ -33,6 +33,9 @@ class Paradigm():
             self.depletion_rules[rndnum] = ((rnd.random()*2) -1) *.05
             self.yield_rules[rndnum] = rnd.random()
 
+        # military techs if used
+        self.military_techs = community.military_techs
+
     # compare expectations of this paradigm for communitys considering
     # adopting it, relative to the community the paradigm already follows
     def Compare(self, community):
@@ -50,6 +53,9 @@ class Paradigm():
         # for diminishing returns when applying paradigm to
         # communities at other latitudes
         p.latitude = community.position[1]
+
+        #for spreading military techs if used
+        self.military_techs = community.military_techs
         
         for i in range(self.mut_amount):
             rndnum = rnd.randint(0,9)
@@ -64,7 +70,8 @@ class Paradigm():
     # using this paradigm creating "word of mouth"
     def UpdateExpectations(self, community):
         if community.params.contagion is None:
-            self.expectations += (((community.icono.comfort - .5) * 0.02) + ((community.agri.yields - self.expectations) * 0.02)) / len(self.followers)
+            self.expectations += (((community.icono.comfort - .5) * 0.02)
+                + ((community.agri.yields - self.expectations) * 0.02)) / len(self.followers)
         elif community.params.contagion == 'Perfect': #perfect information
             self.expectations = sum(self.yield_rules) - (sum(self.depletion_rules)*10)
         elif community.params.contagion == 'FutureDiscounted': #incomplete information
